@@ -27,7 +27,7 @@ function your_prefix_review_notice() {
 
     $installed = ( !empty($actdate) ? $actdate : '999999999999999' );
 
-    //if ( $installed <= $today ) {
+    if ( $installed <= $today ) {
 
         //Make sure we're on the plugins page.
         if ( $pagenow == 'plugins.php' ) {
@@ -77,7 +77,7 @@ function your_prefix_review_notice() {
 
             <?php }
         }
-    //}
+    }
 }
 
 // Function to force the Review Admin Notice to stay dismissed correctly
