@@ -7,6 +7,7 @@ This plugin demo's a simple way to create delayed admin notices in WordPress. Th
 2. When today's timestamp equals or is greater than the activation timestamp, a admin notice will appear only for Admins, and only on the plugins.php page.
 
 The whole function was inspired by [Julien Liabeuf's "WP-Review-Me"](https://github.com/julien731/WP-Review-Me) library which is a far more robust way of doing something similar.
+![Admin Notice Screenshot](assets/admin-notice-screenshot.png)
 
 ## How to Use it
 
