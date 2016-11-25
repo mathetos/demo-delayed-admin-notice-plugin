@@ -15,8 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! function_exists( 'your_prefix_review_notice' ) ) {
     // Add an admin notice.
-    add_action( 'admin_notices', 'your_prefix_review_notice' );
-    
+   add_action('admin_notices', 'your_prefix_review_notice');
+
     /**
      *  Admin Notice to Encourage a Review or Donation.
      *
@@ -40,7 +40,7 @@ if ( ! function_exists( 'your_prefix_review_notice' ) ) {
 
         $installed = ( ! empty( $actdate ) ? $actdate : '999999999999999' );
 
-        if ( $installed <= $today ) {
+        if ( $installed <= $today && danp_is_super_admin_admin( $current_user = $current_user ) == true ) {
 
             // Make sure we're on the plugins page.
             if ( 'plugins.php' == $pagenow ) {
@@ -114,4 +114,20 @@ if ( function_exists( 'your_prefix_ignore_review_notice' ) ) {
             add_user_meta( $user_id, 'your_prefix_review_dismiss', 'true', true );
         }
     }
+}
+
+function danp_is_super_admin_admin($current_user) {
+    global $current_user;
+
+    $shownotice = false;
+
+    if ( is_multisite() && current_user_can('create_sites') ) {
+       $shownotice = true;
+    } elseif ( is_multisite() == false && current_user_can('install_plugins')) {
+        $shownotice = true;
+    } else {
+        $shownotice = false;
+    }
+
+    return $shownotice;
 }
