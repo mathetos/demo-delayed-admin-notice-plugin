@@ -30,12 +30,16 @@ if ( function_exists( 'your_prefix_set_review_trigger_date' ) ) {
      * @since  1.0.0
      */
     function your_prefix_set_review_trigger_date() {
+
+        // Number of days you want the notice delayed by.
+        $delayindays = 30;
+
         // Create timestamp for when plugin was activated.
-        $triggerreview = mktime(0, 0, 0, date('m')  , date('d') + 30, date('Y'));
+        $triggerdate = mktime(0, 0, 0, date('m')  , date('d') + $delayindays, date('Y'));
 
         // If our option doesn't exist already, we'll create it with today's timestamp.
         if ( ! get_option( 'your_prefix_activation_date')) {
-            add_option( 'your_prefix_activation_date', $triggerreview, '', 'yes' );
+            add_option( 'your_prefix_activation_date', $triggerdate, '', 'yes' );
         }
     }
 }

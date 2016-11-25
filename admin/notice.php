@@ -36,10 +36,15 @@ if ( ! function_exists( 'your_prefix_review_notice' ) ) {
 
         // Get today's timestamp.
         $today = mktime( 0, 0, 0, date('m')  , date('d'), date('Y') );
-        $actdate = get_option( 'your_prefix_activation_date', false );
 
-        $installed = ( ! empty( $actdate ) ? $actdate : '999999999999999' );
+        // Get the trigger date
+        $triggerdate = get_option( 'your_prefix_activation_date', false );
 
+        $installed = ( ! empty( $triggerdate ) ? $triggerdate : '999999999999999' );
+
+        // First check whether today's date is greater than the install date plus the delay
+        // Then check whether the use is a Super Admin or Admin on a non-Multisite Network
+        // For testing live, remove `$installed <= $today &&` from this conditional
         if ( $installed <= $today && danp_is_super_admin_admin( $current_user = $current_user ) == true ) {
 
             // Make sure we're on the plugins page.
@@ -95,7 +100,7 @@ if ( ! function_exists( 'your_prefix_review_notice' ) ) {
 }
 
 
-if ( function_exists( 'your_prefix_ignore_review_notice' ) ) {
+if ( ! function_exists( 'your_prefix_ignore_review_notice' ) ) {
     // Function to force the Review Admin Notice to stay dismissed correctly.
     add_action('admin_init', 'your_prefix_ignore_review_notice');
 
@@ -116,18 +121,24 @@ if ( function_exists( 'your_prefix_ignore_review_notice' ) ) {
     }
 }
 
-function danp_is_super_admin_admin($current_user) {
-    global $current_user;
+if ( ! function_exists( 'danp_is_super_admin_admin' ) ) {
 
-    $shownotice = false;
+    // Helper function to determine whether the current
+    // use is a Super Admin or Admin on a non-Network environment
+    function danp_is_super_admin_admin($current_user)
+    {
+        global $current_user;
 
-    if ( is_multisite() && current_user_can('create_sites') ) {
-       $shownotice = true;
-    } elseif ( is_multisite() == false && current_user_can('install_plugins')) {
-        $shownotice = true;
-    } else {
         $shownotice = false;
-    }
 
-    return $shownotice;
+        if (is_multisite() && current_user_can('create_sites')) {
+            $shownotice = true;
+        } elseif (is_multisite() == false && current_user_can('install_plugins')) {
+            $shownotice = true;
+        } else {
+            $shownotice = false;
+        }
+
+        return $shownotice;
+    }
 }
