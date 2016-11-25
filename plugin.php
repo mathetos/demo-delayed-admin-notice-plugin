@@ -6,8 +6,8 @@
  * Author: Matt Cromwell
  * Version: 1.0
  * Author URI: https://www.mattcromwell.com
- *
- * @package WP
+ * License: MIT
+ * License URI: https://opensource.org/licenses/MIT
  *
  *  Simply include the code below in the root file of your plugin,
  *  then include 'admin/notice.php' folder and file in your plugin,
