@@ -35,10 +35,10 @@ if ( function_exists( 'your_prefix_set_review_trigger_date' ) ) {
         $delayindays = 30;
 
         // Create timestamp for when plugin was activated.
-        $triggerdate = mktime(0, 0, 0, date('m')  , date('d') + $delayindays, date('Y'));
+        $triggerdate = mktime( 0, 0, 0, date('m')  , date('d') + $delayindays, date('Y') );
 
         // If our option doesn't exist already, we'll create it with today's timestamp.
-        if ( ! get_option( 'your_prefix_activation_date')) {
+        if ( ! get_option( 'your_prefix_activation_date' ) ) {
             add_option( 'your_prefix_activation_date', $triggerdate, '', 'yes' );
         }
     }
