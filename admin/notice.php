@@ -43,7 +43,7 @@ if ( ! function_exists( 'your_prefix_review_notice' ) ) {
         $installed = ( ! empty( $triggerdate ) ? $triggerdate : '999999999999999' );
 
         // First check whether today's date is greater than the install date plus the delay
-        // Then check whether the use is a Super Admin or Admin on a non-Multisite Network
+        // Then check whether the user is a Super Admin or Admin on a non-Multisite Network
         // For testing live, remove `$installed <= $today &&` from this conditional
         if ( $installed <= $today && danp_is_super_admin_admin( $current_user = $current_user ) == true ) {
 
@@ -124,7 +124,7 @@ if ( ! function_exists( 'your_prefix_ignore_review_notice' ) ) {
 if ( ! function_exists( 'danp_is_super_admin_admin' ) ) {
 
     // Helper function to determine whether the current
-    // use is a Super Admin or Admin on a non-Network environment
+    // user is a Super Admin or Admin on a non-Network environment
     function danp_is_super_admin_admin($current_user)
     {
         global $current_user;
