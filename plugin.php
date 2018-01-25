@@ -20,7 +20,7 @@
 // Step 1: Do a search/replace for 'your_prefix_' and replace it with whatever you like.
 include( dirname( __FILE__ ) . '/admin/notice.php' );
 
-if ( function_exists( 'your_prefix_set_review_trigger_date' ) ) {
+if ( ! function_exists( 'your_prefix_set_review_trigger_date' ) ) {
 
     register_activation_hook( __FILE__,  'your_prefix_set_review_trigger_date' );
 
