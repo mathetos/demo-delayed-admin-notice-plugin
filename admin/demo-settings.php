@@ -171,6 +171,16 @@ function demo_notice_render_settings_page() {
 					
 					<tr>
 						<th scope="row">
+							<label for="demo_notice_plugin_name"><?php esc_html_e( 'Plugin Name', 'demo-delayed-admin-notice' ); ?></label>
+						</th>
+						<td>
+							<input type="text" name="demo_notice_plugin_name" id="demo_notice_plugin_name" value="<?php echo esc_attr( $demo_config['plugin_name'] ?? 'Your Plugin Name' ); ?>" class="regular-text" required />
+							<p class="description"><?php esc_html_e( 'Plugin name displayed in the notice (e.g., My Awesome Plugin)', 'demo-delayed-admin-notice' ); ?></p>
+						</td>
+					</tr>
+					
+					<tr>
+						<th scope="row">
 							<label><?php esc_html_e( 'CTAs', 'demo-delayed-admin-notice' ); ?></label>
 						</th>
 						<td>
@@ -502,6 +512,7 @@ function demo_notice_handle_generate_ajax() {
 	$delay_days = isset( $_POST['demo_notice_delay_days'] ) ? absint( $_POST['demo_notice_delay_days'] ) : 30;
 	$position = isset( $_POST['demo_notice_position'] ) ? sanitize_text_field( wp_unslash( $_POST['demo_notice_position'] ) ) : 'top';
 	$prefix = isset( $_POST['demo_notice_prefix'] ) ? sanitize_key( $_POST['demo_notice_prefix'] ) : 'your_prefix';
+	$plugin_name = isset( $_POST['demo_notice_plugin_name'] ) ? sanitize_text_field( wp_unslash( $_POST['demo_notice_plugin_name'] ) ) : 'Your Plugin Name';
 	$remind_again = isset( $_POST['demo_notice_remind_again'] ) ? sanitize_text_field( wp_unslash( $_POST['demo_notice_remind_again'] ) ) : 'no';
 	$remind_mode = isset( $_POST['demo_notice_remind_mode'] ) ? sanitize_text_field( wp_unslash( $_POST['demo_notice_remind_mode'] ) ) : 'once';
 	$remind_days = isset( $_POST['demo_notice_remind_days'] ) ? absint( $_POST['demo_notice_remind_days'] ) : 60;
@@ -510,6 +521,10 @@ function demo_notice_handle_generate_ajax() {
 	$ctas = isset( $_POST['demo_notice_ctas'] ) && is_array( $_POST['demo_notice_ctas'] ) ? array_map( 'sanitize_text_field', $_POST['demo_notice_ctas'] ) : array( 'review' );
 	$plugin_slug = isset( $_POST['demo_notice_plugin_slug'] ) ? sanitize_text_field( wp_unslash( $_POST['demo_notice_plugin_slug'] ) ) : '';
 	$donation_url = isset( $_POST['demo_notice_donation_url'] ) ? esc_url_raw( wp_unslash( $_POST['demo_notice_donation_url'] ) ) : '';
+	
+	if ( empty( $plugin_name ) ) {
+		wp_send_json_error( array( 'message' => __( 'Plugin name is required.', 'demo-delayed-admin-notice' ) ) );
+	}
 	
 	if ( empty( $page ) ) {
 		wp_send_json_error( array( 'message' => __( 'Please select a page.', 'demo-delayed-admin-notice' ) ) );
@@ -558,6 +573,7 @@ function demo_notice_handle_generate_ajax() {
 		'delay_days' => $delay_days,
 		'position' => $position,
 		'prefix' => $prefix,
+		'plugin_name' => $plugin_name,
 		'enable_remind_again' => 'yes' === $remind_again,
 		'remind_again_mode' => $remind_mode,
 		'remind_again_days' => $remind_days,
@@ -608,6 +624,7 @@ function demo_notice_generate_code( $config ) {
 	$target_screen = $config['page'];
 	$delay_days = $config['delay_days'];
 	$position = $config['position'];
+	$plugin_name = isset( $config['plugin_name'] ) ? $config['plugin_name'] : 'Your Plugin Name';
 	$enable_remind = $config['enable_remind_again'];
 	$remind_mode = $config['remind_again_mode'];
 	$remind_days = $config['remind_again_days'];
@@ -620,6 +637,7 @@ function demo_notice_generate_code( $config ) {
 	$code .= "    'delay_days' => {$delay_days},\n";
 	$code .= "    'target_screens' => array( '{$target_screen}' ),\n";
 	$code .= "    'position' => '{$position}',\n";
+	$code .= "    'plugin_name' => '" . esc_js( $plugin_name ) . "',\n";
 	
 	if ( $enable_remind ) {
 		$code .= "    'enable_remind_again' => true,\n";
@@ -638,9 +656,7 @@ function demo_notice_generate_code( $config ) {
 	
 	$code .= ") );\n";
 	$code .= "\$notice->init();\n";
-	$code .= "\$notice->set_trigger_date(); // Call in activation hook\n\n";
-	$code .= "// Update plugin name in admin/notice.php -> maybe_show_notice() method:\n";
-	$code .= "// \$plugin_name = 'Your Plugin Name'; // Update this\n";
+	$code .= "\$notice->set_trigger_date(); // Call in activation hook\n";
 	
 	return $code;
 }

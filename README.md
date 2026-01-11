@@ -114,6 +114,7 @@ if ( is_admin() && class_exists( 'Your_Prefix_Review_Notice' ) ) {
         'delay_days' => 60,
         'target_screens' => array( 'plugins.php' ),
         'position' => 'bottom-right',
+        'plugin_name' => 'My Awesome Plugin',
         'review_url' => '',
         'donate_url' => 'https://example.com/donate',
     ) );
@@ -133,15 +134,20 @@ Do a search/replace for `your_prefix_` and replace it with your prefix (e.g., `m
 
 Do a search/replace for `your-plugin-textdomain` and replace it with your plugin's text domain.
 
-### Step 3: Configure Plugin Name
+### Step 3: Configure Notice via Constructor
 
-In `admin/notice.php`, find the `maybe_show_notice()` method and update the plugin name:
+All configuration is done via constructor parameters. No need to edit `maybe_show_notice()` unless you want to customize wording or styling:
 
 ```php
-$plugin_name = 'Your Plugin Name'; // Update this
+$review_notice = new Your_Prefix_Review_Notice( array(
+    'prefix' => 'myplugin_review',
+    'delay_days' => 30,
+    'target_screens' => array( 'settings_page_myplugin' ),
+    'plugin_name' => 'My Awesome Plugin',
+    'review_url' => 'https://wordpress.org/support/plugin/my-plugin/reviews/',
+    'donate_url' => '', // Optional: set to empty to hide
+) );
 ```
-
-### Step 4: (Optional) Configure URLs via Constructor
 
 URLs can be set via constructor parameters (recommended) or will fall back to defaults in the code:
 
@@ -163,8 +169,17 @@ The constructor accepts a configuration array with the following options:
 - **`target_screens`** (array): Screen IDs or page slugs where notice appears. Default: `array()` (all admin pages)
 - **`position`** (string): Notice position. Options: `'top'`, `'bottom-right'`, `'bottom-left'`. Default: `'top'`
   - `'top'`: Standard WordPress admin notices area (default)
+  
+    ![Top position example](assets/example-position-top.png)
+  
   - `'bottom-right'`: Floating notice fixed to bottom-right of viewport (sticky)
+  
+    ![Bottom-right position example](assets/example-position-bottom-right.png)
+  
   - `'bottom-left'`: Floating notice fixed to bottom-left of viewport (sticky)
+  
+    ![Bottom-left position example](assets/example-position-bottom-left-no-donate.png)
+- **`plugin_name`** (string): Plugin name for display in notice. Default: `'Your Plugin Name'`
 - **`review_url`** (string): URL for review button. Default: `''` (falls back to default in code)
 - **`donate_url`** (string): URL for donation button. Default: `''` (empty = hidden)
 - **`enable_remind_again`** (bool): Enable remind-again feature. Default: `false`
@@ -227,6 +242,7 @@ function myplugin_init() {
 			'prefix' => 'myplugin_review',
 			'delay_days' => 30,
 			'target_screens' => array( 'settings_page_myplugin' ),
+			'plugin_name' => 'My Awesome Plugin',
 			'review_url' => 'https://wordpress.org/support/plugin/my-awesome-plugin/reviews/',
 			'donate_url' => '', // No donation link
 		) );
@@ -235,11 +251,7 @@ function myplugin_init() {
 }
 ```
 
-Then in `admin/notice.php`, after search/replace, update the plugin name in `maybe_show_notice()`:
-
-```php
-$plugin_name = 'My Awesome Plugin'; // Update this
-```
+All configuration is done via constructor parameters - no need to edit `maybe_show_notice()` unless you want to customize wording or styling.
 
 ## Customization
 
@@ -292,6 +304,7 @@ $review_notice = new Your_Prefix_Review_Notice( array(
     'delay_days' => 30,
     'target_screens' => array( 'settings_page_myplugin' ),
     'position' => 'top',
+    'plugin_name' => 'My Awesome Plugin',
     'review_url' => 'https://wordpress.org/support/plugin/my-plugin/reviews/',
 ) );
 $review_notice->init();
@@ -303,6 +316,7 @@ $donation_notice = new Your_Prefix_Review_Notice( array(
     'delay_days' => 60,
     'target_screens' => array( 'plugins.php' ),
     'position' => 'bottom-right',
+    'plugin_name' => 'My Awesome Plugin',
     'review_url' => '',
     'donate_url' => 'https://example.com/donate',
 ) );
@@ -342,6 +356,7 @@ $review_notice = new Your_Prefix_Review_Notice( array(
     'prefix' => 'myplugin_review',
     'delay_days' => 30,
     'target_screens' => array( 'settings_page_myplugin' ),
+    'plugin_name' => 'My Awesome Plugin',
     'enable_remind_again' => true,     // Enable follow-up reminders
     'remind_again_mode' => 'interval', // Remind every X days
     'remind_again_days' => 90,         // Wait 90 days before each reminder
@@ -357,6 +372,7 @@ if ( is_admin() && class_exists( 'Your_Prefix_Review_Notice' ) ) {
         'prefix' => 'myplugin_review',
         'delay_days' => 30,
         'target_screens' => array( 'settings_page_myplugin' ),
+        'plugin_name' => 'My Awesome Plugin',
         'enable_remind_again' => true,
         'remind_again_mode' => 'once',
         'remind_again_days' => 60,
@@ -369,6 +385,7 @@ if ( is_admin() && class_exists( 'Your_Prefix_Review_Notice' ) ) {
         'prefix' => 'myplugin_donation',
         'delay_days' => 60,
         'target_screens' => array( 'plugins.php' ),
+        'plugin_name' => 'My Awesome Plugin',
         'enable_remind_again' => false, // No reminders (default)
         'donate_url' => 'https://example.com/donate',
     ) );
@@ -392,6 +409,8 @@ The demo tool allows you to:
 - **Test notices in your admin** - See how the notice looks and behaves in a live WordPress admin environment
 - **Generate instantiation code** - Configure all options and get ready-to-use PHP code for your plugin
 - **Try different configurations** - Test various settings, positions, and options before implementing
+
+![Notice Demo and Generator](assets/demo-notice-generator.png)
 
 ### How to Use
 

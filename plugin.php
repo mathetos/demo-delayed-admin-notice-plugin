@@ -155,6 +155,7 @@ function demo_notice_init_demo_notice() {
 			'delay_days' => $demo_config['delay_days'],
 			'target_screens' => array( $demo_config['page'] ),
 			'position' => $demo_config['position'],
+			'plugin_name' => $demo_config['plugin_name'] ?? 'Your Plugin Name',
 			'enable_remind_again' => $demo_config['enable_remind_again'],
 			'remind_again_mode' => $demo_config['remind_again_mode'],
 			'remind_again_days' => $demo_config['remind_again_days'],

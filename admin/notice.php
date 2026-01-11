@@ -7,9 +7,9 @@
  * @since   2.0.0
  *
  * CONFIGURATION REQUIRED:
- * 1. Update plugin name, review URL, and optional donate URL in maybe_show_notice()
- * 2. For single notice: Use default constructor (no config needed)
- * 3. For multiple notices: Pass config array to constructor with unique 'prefix' for each
+ * 1. Do a search/replace for 'your_prefix_', 'Your_Prefix', and 'your-plugin-textdomain'
+ * 2. Pass configuration array to constructor (see constructor documentation)
+ * 3. For deeper customizations (wording, styling), modify the code as needed
  */
 
 // Exit if accessed directly
@@ -150,6 +150,13 @@ class Your_Prefix_Review_Notice {
 	private $donate_url;
 
 	/**
+	 * Plugin name for display
+	 *
+	 * @var string
+	 */
+	private $plugin_name;
+
+	/**
 	 * Constructor
 	 *
 	 * @param array $config Configuration array. Accepts:
@@ -162,6 +169,7 @@ class Your_Prefix_Review_Notice {
 	 *   - 'remind_again_days' (int): Days before reminding again (default: 60)
 	 *   - 'review_url' (string): URL for review button (default: empty string)
 	 *   - 'donate_url' (string): URL for donation button (default: empty string)
+	 *   - 'plugin_name' (string): Plugin name for display (default: 'Your Plugin Name')
 	 */
 	public function __construct( $config = array() ) {
 		// Merge with defaults
@@ -175,6 +183,7 @@ class Your_Prefix_Review_Notice {
 			'remind_again_days'   => self::REMIND_AGAIN_DAYS,
 			'review_url'          => '',
 			'donate_url'          => '',
+			'plugin_name'         => 'Your Plugin Name',
 		) );
 
 		// Set instance properties
@@ -186,6 +195,7 @@ class Your_Prefix_Review_Notice {
 		$this->position            = sanitize_html_class( $this->config['position'] );
 		$this->review_url          = esc_url_raw( $this->config['review_url'] );
 		$this->donate_url          = esc_url_raw( $this->config['donate_url'] );
+		$this->plugin_name         = sanitize_text_field( $this->config['plugin_name'] );
 
 		// Build option/meta keys based on prefix
 		$prefix = sanitize_key( $this->config['prefix'] );
@@ -336,6 +346,18 @@ class Your_Prefix_Review_Notice {
 			if ( $pagenow === $target ) {
 				return true;
 			}
+
+			// Check $_GET['page'] parameter (fallback for submenu pages)
+			// Extract page slug from screen ID format (e.g., 'options-general_page_ai-experiments' -> 'ai-experiments')
+			if ( strpos( $target, '_page_' ) !== false ) {
+				$parts = explode( '_page_', $target, 2 );
+				if ( isset( $parts[1] ) && isset( $_GET['page'] ) ) {
+					$page_param = sanitize_text_field( wp_unslash( $_GET['page'] ) );
+					if ( $page_param === $parts[1] ) {
+						return true;
+					}
+				}
+			}
 		}
 
 		return false;
@@ -374,12 +396,10 @@ class Your_Prefix_Review_Notice {
 			return;
 		}
 
-		// CONFIGURATION: Update plugin name here
-		$plugin_name = 'Your Plugin Name'; // Update this
-
-		// Use URLs from constructor, or fallback to defaults if not provided
-		$review_url = ! empty( $this->review_url ) ? $this->review_url : 'https://wordpress.org/support/plugin/your-plugin-slug/reviews/';
-		$donate_url = ! empty( $this->donate_url ) ? $this->donate_url : '';
+		// Use values from constructor
+		$plugin_name = $this->plugin_name;
+		$review_url  = ! empty( $this->review_url ) ? $this->review_url : 'https://wordpress.org/support/plugin/your-plugin-slug/reviews/';
+		$donate_url  = ! empty( $this->donate_url ) ? $this->donate_url : '';
 
 		$nonce = wp_create_nonce( $this->nonce_action );
 
